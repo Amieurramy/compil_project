@@ -2275,9 +2275,9 @@ initializeHashMap(&symbolTable);
 initializeHashMap(&symbolTablemc);
 initializeHashMap(&symbolTables);
 yyparse();
-//displaySymbolTable(&symbolTable,"IDF");
-//displaySymbolTable(&symbolTablemc,"MOT CLE");
-//displaySymbolTable(&symbolTables,"SEPARATEUR");
+displaySymbolTable(&symbolTable,"IDF");
+displaySymbolTable(&symbolTablemc,"MOT CLE");
+displaySymbolTable(&symbolTables,"SEPARATEUR");
 afficher_qdr();
 }
 yywrap()
