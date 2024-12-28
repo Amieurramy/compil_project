@@ -1,0 +1,49 @@
+PROGRAMME te_tjj_
+VAR {
+INTEGER t[90],tt[30];
+INTEGER a[50];
+FLOAT kk[30];
+INTEGER x,i,z;
+CONST w=(-55.0088888);
+CONST k=0;
+INTEGER y; 
+}
+//djdjjdjdjdjjdjdjd
+BEGIN
+//i=5/!((5.5+2)/!(5+4));
+//w=5;
+FOR(i:0:2:t){
+
+   x=5;           
+}
+/*WHILE((x<y)||(z==t)){
+x=5;
+WHILE((x<y)||(z==t)){
+x=5;
+}
+x=6;
+}*/
+/*IF (5/!(5+3)){
+    t[6]=t[5]-8==5;
+    IF (5/!(5+3)){
+    t[6]=9;
+}
+}ELSE{
+    t[6]=t[5]-8==5;
+}*/
+
+//t[90]=i[5]&&(-2);
+/*FOR(i:0:2:n){
+    WHILE((x<y)||(z==t)){}
+    FOR(i:0:2:3){
+        writeln('ok');
+        writeln(t[i]);
+        readln(i);
+FOR(i:0:2:t){
+            IF(i){}ELSE{IF(i){}}   
+}
+}   
+}
+*/
+END.
+/*jgjfghjjkhkhl  *hgjkjhjjkj*/
