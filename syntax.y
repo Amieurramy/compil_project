@@ -90,10 +90,10 @@ MULTIDEFINT:
     else insert(&symbolTable,($1).text,0,int_type);} 
     | idf sbg entier sbd {if(search(&symbolTable,($1).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",yylineno,($1).text);
     else{if($3==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($1).text);}else{ sprintf(tabtype,"%s[%-2d]",int_type,$3); insert(&symbolTable,($1).text,$3,tabtype);}}}
-    | idf virgule MULTIDEFINT{if(search(&symbolTable,($1).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",ld,($1).text);
-    else insert(&symbolTable,($1).text,0,int_type);} 
-    | idf sbg entier sbd virgule MULTIDEFINT{if(search(&symbolTable,($1).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",yylineno,($1).text);
-    else{ if($3==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($1).text);}else{sprintf(tabtype,"%s[%-2d]",int_type,$3); insert(&symbolTable,($1).text,$3,tabtype);}}}
+    | MULTIDEFINT virgule idf {if(search(&symbolTable,($3).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",ld,($3).text);
+    else insert(&symbolTable,($3).text,0,int_type);} 
+    | MULTIDEFINT virgule idf sbg entier sbd  {if(search(&symbolTable,($3).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",yylineno,($3).text);
+    else{ if($5==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($3).text);}else{sprintf(tabtype,"%s[%-2d]",int_type,$5); insert(&symbolTable,($3).text,$5,tabtype);}}}
 ;   
 
 MULTIDEFFLOAT:

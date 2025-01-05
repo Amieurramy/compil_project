@@ -1,6 +1,7 @@
 PROGRAMME te_tjj_
 VAR {
-INTEGER t[90],tt[30];
+INTEGER t[90],tt[30],ttt[30];
+INTEGER t[90],tt[30],ttt[30];
 INTEGER a[50];
 FLOAT kk[30];
 INTEGER x,i,z;
