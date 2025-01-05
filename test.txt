@@ -3,7 +3,8 @@ VAR {
 INTEGER t[90],tt[30],ttt[30];
 INTEGER t[90],tt[30],ttt[30];
 INTEGER a[50];
-FLOAT kk[30];
+FLOAT k[30],kk[30],kkk[30];
+FLOAT k[30],kk[30],kkk[30];
 INTEGER x,i,z;
 CONST w=(-55.0088888);
 CONST k=0;
