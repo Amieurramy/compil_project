@@ -17,6 +17,11 @@ int step;
 };
 
 
+struct etype{
+  char e[11];
+  int type;
+};
+
 qdr quad[1000];
 
 // Compteur de quadruplet

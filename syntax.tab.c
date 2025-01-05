@@ -78,7 +78,7 @@ extern int ld;
 extern int cold;
 extern int erreur;
 extern char *errortext;
-char pile[20][11];
+struct etype pile[20];
 int pileifbz[20];
 int nifbz=0;
 int pileifbr[20];
@@ -537,11 +537,11 @@ static const yytype_uint16 yyrline[] =
 {
        0,    67,    67,    70,    71,    72,    73,    76,    78,    80,
       82,    89,    91,    93,    95,   100,   102,   104,   106,   111,
-     112,   113,   114,   115,   116,   117,   121,   132,   146,   162,
-     166,   170,   175,   176,   180,   187,   197,   204,   214,   229,
-     233,   236,   242,   243,   248,   254,   269,   282,   284,   285,
-     286,   287,   290,   292,   294,   296,   298,   300,   302,   304,
-     306,   308,   310,   312,   314,   318,   319,   320,   324,   325
+     112,   113,   114,   115,   116,   117,   121,   138,   154,   173,
+     177,   181,   186,   187,   191,   198,   208,   215,   225,   240,
+     244,   247,   253,   254,   259,   271,   289,   303,   305,   306,
+     307,   308,   311,   313,   315,   317,   319,   321,   323,   325,
+     327,   329,   331,   336,   338,   342,   343,   344,   348,   349
 };
 #endif
 
@@ -1694,69 +1694,80 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 121 "syntax.y"
-    {quadr("=",pile[n-1]," ",((yyvsp[(1) - (4)].str)).text);
-    n=0;
+    {
+    quadr("=",pile[n-1].e," ",((yyvsp[(1) - (4)].str)).text);
+    
     test = search(&symbolTable, ((yyvsp[(1) - (4)].str)).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text);
 } else if (test->type != NULL && strcmp(test->type, const_type) == 0) {
     printf("Erreur semantique : la valeur d'une constante ne peut etre modifiee, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text);
-}else{if(strlen(test->type)>=8)
+}else{
+    if(strcmp(test->type,int_type)==0){
+        if(pile[n-1].type==1){
+            printf("Erreur semantique : affectation d'un FLOAT a un INTEGER, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text);
+        }}
+    if(strlen(test->type)>=8)
    printf("Erreur semantique : utilisation d'un tableau sans specifier l'index , ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text); 
-}
-;}
+
+}n=0;;}
     break;
 
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 132 "syntax.y"
+#line 138 "syntax.y"
     {test = search(&symbolTable, ((yyvsp[(1) - (7)].str)).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (7)].str)).ligne, ((yyvsp[(1) - (7)].str)).text);}
 else{if(strlen(test->type)<8)
    printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (7)].str)).ligne, ((yyvsp[(1) - (7)].str)).text); 
-else{struct node *test2;
+else{ if(strncmp(test->type,int_type,7)==0 && pile[n-1].type==1)
+printf("Erreur semantique : affectation d'un FLOAT a un INTEGER, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (7)].str)).ligne, ((yyvsp[(1) - (7)].str)).text);
+    struct node *test2;
 test2=search(&symbolTable,((yyvsp[(3) - (7)].str)).text);
 if(test2==NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree comme INDEX, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (7)].str)).ligne, ((yyvsp[(1) - (7)].str)).text);
 }else if(strcmp(test2->type,int_type)!=0){
     printf("Erreur semantique : l'index d'un tableau doit etre de type INTEGER, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (7)].str)).ligne, ((yyvsp[(3) - (7)].str)).text);
     } 
-}}sprintf(tempvar,"%s[%s]",((yyvsp[(1) - (7)].str)).text,((yyvsp[(3) - (7)].str)).text);quadr("=",pile[n-1]," ",tempvar);
+}}sprintf(tempvar,"%s[%s]",((yyvsp[(1) - (7)].str)).text,((yyvsp[(3) - (7)].str)).text);quadr("=",pile[n-1].e," ",tempvar);
     n=0;;}
     break;
 
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 146 "syntax.y"
+#line 154 "syntax.y"
     {sprintf(tempvar,"%s[%d]",((yyvsp[(1) - (7)].str)).text,(yyvsp[(3) - (7)].entier));
     test = search(&symbolTable, ((yyvsp[(1) - (7)].str)).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (7)].str)).ligne, ((yyvsp[(1) - (7)].str)).text);
 }else{if(strlen(test->type)<8)
     printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (7)].str)).ligne, ((yyvsp[(1) - (7)].str)).text);
-    else{if((yyvsp[(3) - (7)].entier)>=(test->value)){
+    else{
+        if(strncmp(test->type,int_type,7)==0 && pile[n-1].type==1)
+printf("Erreur semantique : affectation d'un FLOAT a un INTEGER, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (7)].str)).ligne, ((yyvsp[(1) - (7)].str)).text);
+        if((yyvsp[(3) - (7)].entier)>=(test->value)){
         printf("Erreur semantique : index hors limite , ligne %-2d , Entite fautive %d\n", ((yyvsp[(1) - (7)].str)).ligne, (yyvsp[(3) - (7)].entier));
     }
     }
 }
-quadr("=",pile[n-1]," ",tempvar);
+quadr("=",pile[n-1].e," ",tempvar);
     n=0;;}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 162 "syntax.y"
+#line 173 "syntax.y"
     {sprintf(tempvar,"%d",qc);updateQuad(pileifbr[nifbr-1],1,tempvar);nifbr--;;}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 166 "syntax.y"
+#line 177 "syntax.y"
     { pileifbz[nifbz]=qc; nifbz++; quadr("BZ"," ",quad[qc-1].res," ");
     ;}
     break;
@@ -1764,14 +1775,14 @@ quadr("=",pile[n-1]," ",tempvar);
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 170 "syntax.y"
+#line 181 "syntax.y"
     {quadr("BR"," "," "," "); pileifbr[nifbr]=qc-1;nifbr++;sprintf(tempvar,"%d",qc);updateQuad(pileifbz[nifbz-1],1,tempvar);nifbz--;;}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 180 "syntax.y"
+#line 191 "syntax.y"
     {sprintf(tempvar,"%d",forsauv[nforsauv-1].step);
         quadr("+",forsauv[nforsauv-1].idf,tempvar,forsauv[nforsauv-1].idf);nforsauv--;
       sprintf(tempvar,"%d",wdebcond[nwdebcon-1]);nwdebcon--;quadr("BR",tempvar," "," ");sprintf(tempvar,"%d",qc);
@@ -1781,7 +1792,7 @@ quadr("=",pile[n-1]," ",tempvar);
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 187 "syntax.y"
+#line 198 "syntax.y"
     { test = search(&symbolTable, ((yyvsp[(2) - (3)].str)).text);
     if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable ou constante non declaree, ligne %-2d , Entite fautive %s\n",((yyvsp[(2) - (3)].str)).ligne, ((yyvsp[(2) - (3)].str)).text);
@@ -1797,7 +1808,7 @@ quadr("=",pile[n-1]," ",tempvar);
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 197 "syntax.y"
+#line 208 "syntax.y"
     {sprintf(tempvar,"%d",(yyvsp[(2) - (3)].entier));
     quadr("BGE"," ",forsauv[nforsauv-1].idf,tempvar);
     wdebcond[nwdebcon]=qc-1;nwdebcon++;
@@ -1808,7 +1819,7 @@ quadr("=",pile[n-1]," ",tempvar);
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 204 "syntax.y"
+#line 215 "syntax.y"
     {test = search(&symbolTable, ((yyvsp[(3) - (8)].str)).text);
     if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n",((yyvsp[(3) - (8)].str)).ligne, ((yyvsp[(3) - (8)].str)).text);
@@ -1823,7 +1834,7 @@ forsauv[nforsauv].idf=((yyvsp[(3) - (8)].str)).text;forsauv[nforsauv].step=(yyvs
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 214 "syntax.y"
+#line 225 "syntax.y"
     {test = search(&symbolTable, ((yyvsp[(3) - (8)].str)).text);
     if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n",((yyvsp[(3) - (8)].str)).ligne, ((yyvsp[(3) - (8)].str)).text);
@@ -1839,7 +1850,7 @@ forsauv[nforsauv].idf=((yyvsp[(3) - (8)].str)).text;forsauv[nforsauv].step=(yyvs
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 229 "syntax.y"
+#line 240 "syntax.y"
     {sprintf(tempvar,"%d",wdebcond[nwdebcon-1]);nwdebcon--;quadr("BR",tempvar," "," ");sprintf(tempvar,"%d",qc);
     updateQuad(wend[nwend-1],1,tempvar);nwend--;;}
     break;
@@ -1847,38 +1858,47 @@ forsauv[nforsauv].idf=((yyvsp[(3) - (8)].str)).text;forsauv[nforsauv].step=(yyvs
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 233 "syntax.y"
+#line 244 "syntax.y"
     {wdebcond[nwdebcon]=qc;nwdebcon++;;}
     break;
 
   case 41:
 
 /* Line 1455 of yacc.c  */
-#line 236 "syntax.y"
+#line 247 "syntax.y"
     {wend[nwend]=qc; nwend++;quadr("BZ"," ",quad[qc-1].res," ");;}
     break;
 
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 248 "syntax.y"
+#line 259 "syntax.y"
     {test = search(&symbolTable, ((yyvsp[(1) - (1)].str)).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable ou constante non declaree, ligne %-2d, Entite fautive %s\n",((yyvsp[(1) - (1)].str)).ligne, ((yyvsp[(1) - (1)].str)).text);
+}else{sprintf(tempvar,"%s",((yyvsp[(1) - (1)].str)).text);sprintf(pile[n].e,"%s",tempvar);
+    if(strlen(test->type)>=8)
+   printf("Erreur semantique : utilisation d'un tableau sans specifier l'index , ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (1)].str)).ligne, ((yyvsp[(1) - (1)].str)).text); 
+else{if(strcmp(test->type,int_type)==0){
+    pile[n].type=0;}else pile[n].type=1;
+}    
+n++;
 }
-sprintf(tempvar,"%s",((yyvsp[(1) - (1)].str)).text);sprintf(pile[n],"%s",tempvar);n++;
 ;}
     break;
 
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 254 "syntax.y"
+#line 271 "syntax.y"
     {test = search(&symbolTable, ((yyvsp[(1) - (4)].str)).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text);}
-else{if(strlen(test->type)<8)
-   printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text); 
+else{if(strlen(test->type)<8){
+    printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text); 
+    if(strncmp(test->type,int_type,7)==0){pile[n].type=0;}else pile[n].type=1;
+}
+   
 else{struct node *test2;
 test2=search(&symbolTable,((yyvsp[(3) - (4)].str)).text);
 if(test2==NULL) {
@@ -1887,174 +1907,178 @@ if(test2==NULL) {
     printf("Erreur semantique : l'index d'un tableau doit etre de type INTEGER, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(3) - (4)].str)).text);
     } 
 }}
-        sprintf(tempvar,"%s[%s]",((yyvsp[(1) - (4)].str)).text,((yyvsp[(3) - (4)].str)).text);sprintf(pile[n],"%s",tempvar);n++;
+        sprintf(tempvar,"%s[%s]",((yyvsp[(1) - (4)].str)).text,((yyvsp[(3) - (4)].str)).text);sprintf(pile[n].e,"%s",tempvar);n++;
     ;}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 269 "syntax.y"
+#line 289 "syntax.y"
     {sprintf(tempvar,"%s[%d]",((yyvsp[(1) - (4)].str)).text,(yyvsp[(3) - (4)].entier));
     test = search(&symbolTable, ((yyvsp[(1) - (4)].str)).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text);
-}else{if(strlen(test->type)<8)
+}else{if(strlen(test->type)<8){
     printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ((yyvsp[(1) - (4)].str)).ligne, ((yyvsp[(1) - (4)].str)).text);
-    else{if((yyvsp[(3) - (4)].entier)>=(test->value)){
+    if(strncmp(test->type,int_type,7)==0){pile[n].type=0;}else pile[n].type=1;
+    }else{if((yyvsp[(3) - (4)].entier)>=(test->value)){
         printf("Erreur semantique : index hors limite , ligne %-2d , Entite fautive %d\n", ((yyvsp[(1) - (4)].str)).ligne, (yyvsp[(3) - (4)].entier));
     }
     }
 }
-        sprintf(tempvar,"%s[%d]",((yyvsp[(1) - (4)].str)).text,(yyvsp[(3) - (4)].entier));sprintf(pile[n],"%s",tempvar);n++;
+        sprintf(tempvar,"%s[%d]",((yyvsp[(1) - (4)].str)).text,(yyvsp[(3) - (4)].entier));sprintf(pile[n].e,"%s",tempvar);n++;
     ;}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 282 "syntax.y"
-    {
-         sprintf(tempvar,"%-10d",(yyvsp[(1) - (1)].entier));sprintf(pile[n],"%s",tempvar);n++;;}
+#line 303 "syntax.y"
+    {pile[n].type=0;
+         sprintf(tempvar,"%-10d",(yyvsp[(1) - (1)].entier));sprintf(pile[n].e,"%s",tempvar);n++;;}
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 284 "syntax.y"
-    { sprintf(tempvar,"%-10.5f",(yyvsp[(1) - (1)].reel));sprintf(pile[n],"%s",tempvar);n++;;}
+#line 305 "syntax.y"
+    {pile[n].type=1; sprintf(tempvar,"%-10.5f",(yyvsp[(1) - (1)].reel));sprintf(pile[n].e,"%s",tempvar);n++;;}
     break;
 
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 285 "syntax.y"
-    { sprintf(tempvar,"%-10d",(yyvsp[(1) - (1)].entier));sprintf(pile[n],"%s",tempvar);n++;;}
+#line 306 "syntax.y"
+    {pile[n].type=0; sprintf(tempvar,"%-10d",(yyvsp[(1) - (1)].entier));sprintf(pile[n].e,"%s",tempvar);n++;;}
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 286 "syntax.y"
-    { sprintf(tempvar,"%-10.5f",(yyvsp[(1) - (1)].reel));sprintf(pile[n],"%s",tempvar);n++;;}
+#line 307 "syntax.y"
+    {pile[n].type=1; sprintf(tempvar,"%-10.5f",(yyvsp[(1) - (1)].reel));sprintf(pile[n].e,"%s",tempvar);n++;;}
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 287 "syntax.y"
-    {
-    sprintf(tempvar,"T%-2d",temp);temp++;quadr("!",pile[n-1]," ",tempvar);
-    sprintf(pile[n-1],"%s",tempvar);;}
+#line 308 "syntax.y"
+    {pile[n-1].type=0;
+    sprintf(tempvar,"T%-2d",temp);temp++;quadr("!",pile[n-1].e," ",tempvar);
+    sprintf(pile[n-1].e,"%s",tempvar);;}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 290 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("||",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar); n--;;}
+#line 311 "syntax.y"
+    {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("||",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar); n--;;}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 292 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("&&",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 313 "syntax.y"
+    {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("&&",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 294 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr(">",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 315 "syntax.y"
+    {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr(">",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 296 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr(">=",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 317 "syntax.y"
+    {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr(">=",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 298 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("==",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 319 "syntax.y"
+    {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("==",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 300 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("!=",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar); n--;;}
+#line 321 "syntax.y"
+    {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("!=",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar); n--;;}
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 302 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("<=",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 323 "syntax.y"
+    {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("<=",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 304 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("<",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 325 "syntax.y"
+    {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("<",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 306 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("+",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 327 "syntax.y"
+    {pile[n-2].type=pile[n-2].type||pile[n-1].type;sprintf(tempvar,"T%-2d",temp);temp++;quadr("+",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 308 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("-",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 329 "syntax.y"
+    {pile[n-2].type=pile[n-2].type||pile[n-1].type;sprintf(tempvar,"T%-2d",temp);temp++;quadr("-",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 310 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("/",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 331 "syntax.y"
+    {pile[n-2].type=pile[n-2].type||pile[n-1].type;
+    if(strcmp(pile[n-1].e,"0         ")==0){
+        printf("Erreur semantique : Division par zero, ligne %-2d\n",yylineno);}
+    sprintf(tempvar,"T%-2d",temp);temp++;quadr("/",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 312 "syntax.y"
-    {sprintf(tempvar,"T%-2d",temp);temp++;quadr("*",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;;}
+#line 336 "syntax.y"
+    {pile[n-2].type=pile[n-2].type||pile[n-1].type;sprintf(tempvar,"T%-2d",temp);temp++;quadr("*",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;;}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 314 "syntax.y"
+#line 338 "syntax.y"
     {;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2058 "syntax.tab.c"
+#line 2082 "syntax.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2266,7 +2290,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 327 "syntax.y"
+#line 351 "syntax.y"
 
 main ()
 {

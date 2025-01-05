@@ -8,7 +8,7 @@ extern int ld;
 extern int cold;
 extern int erreur;
 extern char *errortext;
-char pile[20][11];
+struct etype pile[20];
 int pileifbz[20];
 int nifbz=0;
 int pileifbr[20];
@@ -118,30 +118,38 @@ INSTRUCTIONS:
 ;
 
 AFFECTATION:
-    idf aff EXPRESSION pvg{quadr("=",pile[n-1]," ",($1).text);
-    n=0;
+    idf aff EXPRESSION pvg{
+    quadr("=",pile[n-1].e," ",($1).text);
+    
     test = search(&symbolTable, ($1).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
 } else if (test->type != NULL && strcmp(test->type, const_type) == 0) {
     printf("Erreur semantique : la valeur d'une constante ne peut etre modifiee, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
-}else{if(strlen(test->type)>=8)
+}else{
+    if(strcmp(test->type,int_type)==0){
+        if(pile[n-1].type==1){
+            printf("Erreur semantique : affectation d'un FLOAT a un INTEGER, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
+        }}
+    if(strlen(test->type)>=8)
    printf("Erreur semantique : utilisation d'un tableau sans specifier l'index , ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text); 
-}
-}
+
+}n=0;}
     | idf sbg idf sbd aff EXPRESSION pvg {test = search(&symbolTable, ($1).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);}
 else{if(strlen(test->type)<8)
    printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text); 
-else{struct node *test2;
+else{ if(strncmp(test->type,int_type,7)==0 && pile[n-1].type==1)
+printf("Erreur semantique : affectation d'un FLOAT a un INTEGER, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
+    struct node *test2;
 test2=search(&symbolTable,($3).text);
 if(test2==NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree comme INDEX, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
 }else if(strcmp(test2->type,int_type)!=0){
     printf("Erreur semantique : l'index d'un tableau doit etre de type INTEGER, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($3).text);
     } 
-}}sprintf(tempvar,"%s[%s]",($1).text,($3).text);quadr("=",pile[n-1]," ",tempvar);
+}}sprintf(tempvar,"%s[%s]",($1).text,($3).text);quadr("=",pile[n-1].e," ",tempvar);
     n=0;}
     | idf sbg entier sbd aff EXPRESSION pvg {sprintf(tempvar,"%s[%d]",($1).text,$3);
     test = search(&symbolTable, ($1).text);
@@ -149,12 +157,15 @@ if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
 }else{if(strlen(test->type)<8)
     printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
-    else{if($3>=(test->value)){
+    else{
+        if(strncmp(test->type,int_type,7)==0 && pile[n-1].type==1)
+printf("Erreur semantique : affectation d'un FLOAT a un INTEGER, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
+        if($3>=(test->value)){
         printf("Erreur semantique : index hors limite , ligne %-2d , Entite fautive %d\n", ($1).ligne, $3);
     }
     }
 }
-quadr("=",pile[n-1]," ",tempvar);
+quadr("=",pile[n-1].e," ",tempvar);
     n=0;}
 ;
 
@@ -248,14 +259,23 @@ EXPRESSION:
     idf {test = search(&symbolTable, ($1).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable ou constante non declaree, ligne %-2d, Entite fautive %s\n",($1).ligne, ($1).text);
+}else{sprintf(tempvar,"%s",($1).text);sprintf(pile[n].e,"%s",tempvar);
+    if(strlen(test->type)>=8)
+   printf("Erreur semantique : utilisation d'un tableau sans specifier l'index , ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text); 
+else{if(strcmp(test->type,int_type)==0){
+    pile[n].type=0;}else pile[n].type=1;
+}    
+n++;
 }
-sprintf(tempvar,"%s",($1).text);sprintf(pile[n],"%s",tempvar);n++;
 }
     |idf sbg idf sbd{test = search(&symbolTable, ($1).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);}
-else{if(strlen(test->type)<8)
-   printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text); 
+else{if(strlen(test->type)<8){
+    printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text); 
+    if(strncmp(test->type,int_type,7)==0){pile[n].type=0;}else pile[n].type=1;
+}
+   
 else{struct node *test2;
 test2=search(&symbolTable,($3).text);
 if(test2==NULL) {
@@ -264,53 +284,57 @@ if(test2==NULL) {
     printf("Erreur semantique : l'index d'un tableau doit etre de type INTEGER, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($3).text);
     } 
 }}
-        sprintf(tempvar,"%s[%s]",($1).text,($3).text);sprintf(pile[n],"%s",tempvar);n++;
+        sprintf(tempvar,"%s[%s]",($1).text,($3).text);sprintf(pile[n].e,"%s",tempvar);n++;
     }
     |idf sbg entier sbd{sprintf(tempvar,"%s[%d]",($1).text,$3);
     test = search(&symbolTable, ($1).text);
 if (test == NULL) {
     printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
-}else{if(strlen(test->type)<8)
+}else{if(strlen(test->type)<8){
     printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
-    else{if($3>=(test->value)){
+    if(strncmp(test->type,int_type,7)==0){pile[n].type=0;}else pile[n].type=1;
+    }else{if($3>=(test->value)){
         printf("Erreur semantique : index hors limite , ligne %-2d , Entite fautive %d\n", ($1).ligne, $3);
     }
     }
 }
-        sprintf(tempvar,"%s[%d]",($1).text,$3);sprintf(pile[n],"%s",tempvar);n++;
+        sprintf(tempvar,"%s[%d]",($1).text,$3);sprintf(pile[n].e,"%s",tempvar);n++;
     }
-    |entier {
-         sprintf(tempvar,"%-10d",$1);sprintf(pile[n],"%s",tempvar);n++;}
-    |reels { sprintf(tempvar,"%-10.5f",$1);sprintf(pile[n],"%s",tempvar);n++;}
-    |entiers { sprintf(tempvar,"%-10d",$1);sprintf(pile[n],"%s",tempvar);n++;}
-    |reel { sprintf(tempvar,"%-10.5f",$1);sprintf(pile[n],"%s",tempvar);n++;}
-    |not EXPRESSION {
-    sprintf(tempvar,"T%-2d",temp);temp++;quadr("!",pile[n-1]," ",tempvar);
-    sprintf(pile[n-1],"%s",tempvar);}
-    |EXPRESSION or EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("||",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar); n--;}
-    |EXPRESSION and EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("&&",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION sup EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr(">",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION supe EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr(">=",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION equal EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("==",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION nequal EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("!=",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar); n--;}
-    |EXPRESSION infe EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("<=",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION inf EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("<",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION plus EXPRESSION{sprintf(tempvar,"T%-2d",temp);temp++;quadr("+",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION min EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("-",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION sur EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("/",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
-    |EXPRESSION fo EXPRESSION {sprintf(tempvar,"T%-2d",temp);temp++;quadr("*",pile[n-2],pile[n-1],tempvar);
-    sprintf(pile[n-2],"%s",tempvar);  n--;}
+    |entier {pile[n].type=0;
+         sprintf(tempvar,"%-10d",$1);sprintf(pile[n].e,"%s",tempvar);n++;}
+    |reels {pile[n].type=1; sprintf(tempvar,"%-10.5f",$1);sprintf(pile[n].e,"%s",tempvar);n++;}
+    |entiers {pile[n].type=0; sprintf(tempvar,"%-10d",$1);sprintf(pile[n].e,"%s",tempvar);n++;}
+    |reel {pile[n].type=1; sprintf(tempvar,"%-10.5f",$1);sprintf(pile[n].e,"%s",tempvar);n++;}
+    |not EXPRESSION {pile[n-1].type=0;
+    sprintf(tempvar,"T%-2d",temp);temp++;quadr("!",pile[n-1].e," ",tempvar);
+    sprintf(pile[n-1].e,"%s",tempvar);}
+    |EXPRESSION or EXPRESSION {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("||",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar); n--;}
+    |EXPRESSION and EXPRESSION {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("&&",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION sup EXPRESSION {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr(">",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION supe EXPRESSION {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr(">=",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION equal EXPRESSION {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("==",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION nequal EXPRESSION {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("!=",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar); n--;}
+    |EXPRESSION infe EXPRESSION {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("<=",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION inf EXPRESSION {pile[n-2].type=0;sprintf(tempvar,"T%-2d",temp);temp++;quadr("<",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION plus EXPRESSION{pile[n-2].type=pile[n-2].type||pile[n-1].type;sprintf(tempvar,"T%-2d",temp);temp++;quadr("+",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION min EXPRESSION {pile[n-2].type=pile[n-2].type||pile[n-1].type;sprintf(tempvar,"T%-2d",temp);temp++;quadr("-",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION sur EXPRESSION {pile[n-2].type=pile[n-2].type||pile[n-1].type;
+    if(strcmp(pile[n-1].e,"0         ")==0){
+        printf("Erreur semantique : Division par zero, ligne %-2d\n",yylineno);}
+    sprintf(tempvar,"T%-2d",temp);temp++;quadr("/",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
+    |EXPRESSION fo EXPRESSION {pile[n-2].type=pile[n-2].type||pile[n-1].type;sprintf(tempvar,"T%-2d",temp);temp++;quadr("*",pile[n-2].e,pile[n-1].e,tempvar);
+    sprintf(pile[n-2].e,"%s",tempvar);  n--;}
     |pg EXPRESSION pd {}
 ;
 
