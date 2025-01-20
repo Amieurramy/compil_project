@@ -92,7 +92,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 42 "syntax.y"
+#line 43 "syntax.y"
 
 int entier;
  struct {

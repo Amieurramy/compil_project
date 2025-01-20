@@ -51,14 +51,14 @@ void updateQuad(int num_quad, int colon_quad, char val [])
 /* Fonction d'affichage des quadruplets générés */
 void afficher_qdr()
 {printf("\n\n");
- printf("==================================================================\n");
- printf("|                         Les Quadruplets                        |\n");
- printf("==================================================================\n");
+ printf("=====================================================================\n");
+ printf("|                          Les Quadruplets                          |\n");
+ printf("=====================================================================\n");
   int i;
   for(i=0;i<qc;i++)
   {
-  printf("| %-2d - (  %-3s  ,  %-10s  ,  %-10s  ,  %-13s  ) |\n",i,quad[i].oper,quad[i].op1,quad[i].op2,quad[i].res); 
- printf("==================================================================\n");
+  printf("| %-2d - (  %-6s  ,  %-10s  ,  %-10s  ,  %-13s  ) |\n",i,quad[i].oper,quad[i].op1,quad[i].op2,quad[i].res); 
+ printf("=====================================================================\n");
   }
 }
 

@@ -8,23 +8,32 @@ FLOAT k[30],kk[30],kkk[30];
 INTEGER x,i,z;
 CONST w=(-55.0088888);
 CONST k=0;
-INTEGER y; 
+INTEGER y;
+FLOAT d; 
 }
 //djdjjdjdjdjjdjdjd
 BEGIN
+y=d;
+readln(t[900]);
+
 //i=5/!((5.5+2)/!(5+4));
 //w=5;
 FOR(i:0:2:t){
+    x=3;
+FOR(i:0:2:t){
 
+   x=7;           
+}
    x=5;           
 }
 WHILE((x<y)||(z==t)){
 x=5;
-WHILE((x<y)||(z==t)){
+}
+/*WHILE((x<y)||(z==t)){
 x=5;
 }
 x=55/3;
-}
+
 IF (5/!(5+3)){
     t[6]=t[5]/0-8==5;
     IF (5/!(5+3)){
@@ -46,6 +55,6 @@ FOR(i:0:2:t){
 }
 }   
 }
-
+*/
 END.
 /*jgjfghjjkhkhl  *hgjkjhjjkj*/

@@ -28,6 +28,7 @@ char* array_of_float="ARRAY OF FLOAT";
 char* current_type;
 extern int yylineno;
 char tabtype[20];
+char bound[20];
 int qc=0;
 int wdebcond[20];
 int nwdebcon=0;
@@ -89,22 +90,22 @@ MULTIDEFINT:
     idf {if(search(&symbolTable,($1).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s\n",ld,($1).text);
     else insert(&symbolTable,($1).text,0,int_type);} 
     | idf sbg entier sbd {if(search(&symbolTable,($1).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",yylineno,($1).text);
-    else{if($3==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($1).text);}else{ sprintf(tabtype,"%s[%-2d]",int_type,$3); insert(&symbolTable,($1).text,$3,tabtype);}}}
+    else{if($3==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($1).text);}else{ sprintf(tabtype,"%s[%-2d]",int_type,$3); insert(&symbolTable,($1).text,$3,tabtype);itoa($3-1, bound , 10);quadr("BOUNDS","0",bound," ");quadr("ADEC"," ",($1).text," ");}}}
     | MULTIDEFINT virgule idf {if(search(&symbolTable,($3).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",ld,($3).text);
     else insert(&symbolTable,($3).text,0,int_type);} 
     | MULTIDEFINT virgule idf sbg entier sbd  {if(search(&symbolTable,($3).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",yylineno,($3).text);
-    else{ if($5==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($3).text);}else{sprintf(tabtype,"%s[%-2d]",int_type,$5); insert(&symbolTable,($3).text,$5,tabtype);}}}
+    else{ if($5==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($3).text);}else{sprintf(tabtype,"%s[%-2d]",int_type,$5); insert(&symbolTable,($3).text,$5,tabtype);itoa($5-1, bound , 10);quadr("BOUNDS","0",bound," ");quadr("ADEC"," ",($3).text," ");}}}
 ;   
 
 MULTIDEFFLOAT:
     idf {if(search(&symbolTable,($1).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s\n",ld,($1).text);
     else insert(&symbolTable,($1).text,0,float_type);}
     | idf sbg entier sbd {if(search(&symbolTable,($1).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",yylineno,($1).text);
-    else{if($3==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($1).text);}else{ sprintf(tabtype,"%s[%-2d]",float_type,$3); insert(&symbolTable,($1).text,$3,tabtype);}}}
+    else{if($3==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($1).text);}else{ sprintf(tabtype,"%s[%-2d]",float_type,$3); insert(&symbolTable,($1).text,$3,tabtype);itoa($3-1, bound , 10);quadr("BOUNDS","0",bound," ");quadr("ADEC"," ",($1).text," ");}}}
     | MULTIDEFFLOAT virgule idf{if(search(&symbolTable,($3).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",ld,($3).text);
     else insert(&symbolTable,($3).text,0,float_type);}
     | MULTIDEFFLOAT virgule idf sbg entier sbd{if(search(&symbolTable,($3).text)!=NULL)printf("Erreur semantique : Double declaration, ligne %-2d , Entite fautive %s \n",yylineno,($3).text);
-    else{if($5==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($3).text);}else{ sprintf(tabtype,"%s[%-2d]",float_type,$5); insert(&symbolTable,($3).text,$5,tabtype);}}};
+    else{if($5==0){printf("Erreur semantique : Declaration d'un Tableau avec une taille Nulle , ligne %-2d , Entite fautive %s\n",ld,($3).text);}else{ sprintf(tabtype,"%s[%-2d]",float_type,$5); insert(&symbolTable,($3).text,$5,tabtype);itoa($5-1, bound , 10);quadr("BOUNDS","0",bound," ");quadr("ADEC"," ",($3).text," ");}}};
 ;
 
 INSTRUCTIONS:
@@ -145,7 +146,7 @@ printf("Erreur semantique : affectation d'un FLOAT a un INTEGER, ligne %-2d , En
     struct node *test2;
 test2=search(&symbolTable,($3).text);
 if(test2==NULL) {
-    printf("Erreur semantique : utilisation d'une variable non declaree comme INDEX, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($1).text);
+    printf("Erreur semantique : utilisation d'une variable non declaree comme INDEX, ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);
 }else if(strcmp(test2->type,int_type)!=0){
     printf("Erreur semantique : l'index d'un tableau doit etre de type INTEGER, ligne %-2d , Entite fautive %s\n", ($1).ligne, ($3).text);
     } 
@@ -248,11 +249,7 @@ whilecond:
     
 ;
 
-
-INDEX:
-     sbg idf sbd
-     | sbg entier sbd
-;    
+ 
 
 
 EXPRESSION:
@@ -340,13 +337,76 @@ if (test == NULL) {
 
 print:
     write pg ch pd pvg
-    |write pg idf pd pvg
-    |write pg idf INDEX pd pvg
+    |write pg idf pd pvg{test = search(&symbolTable, ($3).text);
+if (test == NULL) {
+    printf("Erreur semantique : utilisation d'une variable ou constante non declaree, ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);
+}else{
+    if(strlen(test->type)>=8)
+   printf("Erreur semantique : utilisation d'un tableau sans specifier l'index , ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text); 
+}}
+    | write pg idf sbg idf sbd pd pvg{test = search(&symbolTable, ($3).text);
+if (test == NULL) {
+    printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);}
+else{if(strlen(test->type)<8)
+   printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text); 
+else{ 
+    struct node *test2;
+test2=search(&symbolTable,($5).text);
+if(test2==NULL) {
+    printf("Erreur semantique : utilisation d'une variable non declaree comme INDEX, ligne %-2d , Entite fautive %s\n", ($5).ligne, ($5).text);
+}else if(strcmp(test2->type,int_type)!=0){
+    printf("Erreur semantique : l'index d'un tableau doit etre de type INTEGER, ligne %-2d , Entite fautive %s\n", ($5).ligne, ($5).text);
+    } 
+}}}
+    | write pg idf sbg entier sbd pd pvg {test = search(&symbolTable, ($3).text);
+if (test == NULL) {
+    printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);
+}else{if(strlen(test->type)<8)
+    printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);
+    else{
+        if($5>=(test->value)){
+        printf("Erreur semantique : index hors limite , ligne %-2d , Entite fautive %d\n", ($3).ligne, $5);
+    }
+    }
+}}
 ;
 
 input:
-    read pg idf pd pvg
-    | read pg idf INDEX pd pvg
+    read pg idf pd pvg{test = search(&symbolTable, ($3).text);
+if (test == NULL) 
+    printf("Erreur semantique : utilisation d'une variable ou constante non declaree, ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);
+    else if (test->type != NULL && strcmp(test->type, const_type) == 0) {
+    printf("Erreur semantique : la valeur d'une constante ne peut etre modifiee, ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);
+}else{
+    if(strlen(test->type)>=8)
+   printf("Erreur semantique : utilisation d'un tableau sans specifier l'index , ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text); 
+}}
+
+    | read pg idf sbg idf sbd pd pvg{test = search(&symbolTable, ($3).text);
+if (test == NULL) {
+    printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);}
+else{if(strlen(test->type)<8)
+   printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text); 
+else{ 
+    struct node *test2;
+test2=search(&symbolTable,($5).text);
+if(test2==NULL) {
+    printf("Erreur semantique : utilisation d'une variable non declaree comme INDEX, ligne %-2d , Entite fautive %s\n", ($5).ligne, ($5).text);
+}else if(strcmp(test2->type,int_type)!=0){
+    printf("Erreur semantique : l'index d'un tableau doit etre de type INTEGER, ligne %-2d , Entite fautive %s\n", ($5).ligne, ($5).text);
+    } 
+}}}
+    | read pg idf sbg entier sbd pd pvg {test = search(&symbolTable, ($3).text);
+if (test == NULL) {
+    printf("Erreur semantique : utilisation d'une variable non declaree, ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);
+}else{if(strlen(test->type)<8)
+    printf("Erreur semantique : utilisation d'une variable simple ou constante avec un INDEX , ligne %-2d , Entite fautive %s\n", ($3).ligne, ($3).text);
+    else{
+        if($5>=(test->value)){
+        printf("Erreur semantique : index hors limite , ligne %-2d , Entite fautive %d\n", ($3).ligne, $5);
+    }
+    }
+}}
 ;        
 %%
 main ()
